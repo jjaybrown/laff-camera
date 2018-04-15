@@ -1,6 +1,8 @@
 import * as React from 'react'
 import { StyleSheet, View, Text, TouchableWithoutFeedback } from 'react-native'
 import { RNCamera } from 'react-native-camera'
+import MaterialIcon from 'react-native-vector-icons/MaterialIcons'
+import FeatherIcon from 'react-native-vector-icons/Feather'
 
 import Svg, { Circle } from 'react-native-svg'
 
@@ -51,32 +53,139 @@ class Camera extends React.Component<Props, { recording: boolean }> {
 
     render() {
         return (
-            <RNCamera
-                ref={ref => {
-                    this.camera = ref
-                }}
-                style={styles.preview}
-                type={RNCamera.Constants.Type.back}
-                flashMode={RNCamera.Constants.FlashMode.off}
-                permissionDialogTitle={'Permission to use camera'}
-                permissionDialogMessage={
-                    'We need your permission to use your camera phone'
-                }
-                notAuthorizedView={<CameraNotAuthorizedView />}
-            >
-                <TouchableWithoutFeedback onPress={this.capture}>
-                    <Svg style={styles.capture} width="100" height="120">
-                        <Circle
-                            cx="50"
-                            cy="50"
-                            r="45"
-                            stroke={this.state.recording ? 'red' : 'white'}
-                            strokeWidth="10"
-                            fill={this.state.recording ? 'red' : 'transparent'}
+            <View style={styles.container}>
+                <RNCamera
+                    ref={ref => {
+                        this.camera = ref
+                    }}
+                    style={styles.preview}
+                    type={RNCamera.Constants.Type.back}
+                    flashMode={RNCamera.Constants.FlashMode.off}
+                    permissionDialogTitle={'Permission to use camera'}
+                    permissionDialogMessage={
+                        'We need your permission to use your camera phone'
+                    }
+                    notAuthorizedView={<CameraNotAuthorizedView />}
+                >
+                    <View
+                        style={{
+                            paddingVertical: 6,
+                            paddingHorizontal: 6,
+                            opacity: 0.8,
+                            margin: 10,
+                            borderWidth: 0,
+                            borderColor: '#fff',
+                            borderRadius: 35,
+                        }}
+                    >
+                        <FeatherIcon name="delete" size={35} color="#fff" />
+                    </View>
+                    <View
+                        style={{
+                            paddingVertical: 6,
+                            paddingHorizontal: 6,
+                            opacity: 0.8,
+                            margin: 10,
+                            borderWidth: 0,
+                            borderColor: '#fff',
+                            borderRadius: 35,
+                        }}
+                    >
+                        <FeatherIcon
+                            name="arrow-right"
+                            size={35}
+                            color="#fff"
                         />
-                    </Svg>
-                </TouchableWithoutFeedback>
-            </RNCamera>
+                    </View>
+                    <View
+                        style={{
+                            paddingVertical: 6,
+                            paddingHorizontal: 6,
+                            opacity: 0.8,
+                            margin: 10,
+                            borderWidth: 0,
+                            borderColor: '#fff',
+                            borderRadius: 35,
+                        }}
+                    >
+                        <FeatherIcon name="image" size={35} color="#fff" />
+                    </View>
+                    <View
+                        style={{
+                            paddingVertical: 6,
+                            paddingHorizontal: 6,
+                            opacity: 0.8,
+                            margin: 10,
+                            borderWidth: 0,
+                            borderColor: '#fff',
+                            borderRadius: 35,
+                        }}
+                    >
+                        <FeatherIcon
+                            name="refresh-cw"
+                            size={30}
+                            color="#fff"
+                            style={{ marginLeft: 0 }}
+                        />
+                    </View>
+                    <View
+                        style={{
+                            paddingVertical: 6,
+                            paddingHorizontal: 6,
+                            opacity: 0.8,
+                            margin: 10,
+                            borderWidth: 0,
+                            borderColor: '#fff',
+                            borderRadius: 35,
+                        }}
+                    >
+                        <MaterialIcon
+                            name="flash-on"
+                            size={35}
+                            color="#fff"
+                            style={{ marginLeft: 0 }}
+                        />
+                    </View>
+                    <View
+                        style={{
+                            paddingVertical: 6,
+                            paddingHorizontal: 5,
+                            opacity: 0.5,
+                            margin: 10,
+                            borderWidth: 0,
+                            borderColor: '#fff',
+                            borderRadius: 35,
+                        }}
+                    >
+                        <MaterialIcon
+                            name="flash-off"
+                            size={35}
+                            color="#fff"
+                            style={{ marginLeft: 3 }}
+                        />
+                    </View>
+                    <TouchableWithoutFeedback onPress={this.capture}>
+                        <Svg style={styles.capture} width="85" height="100">
+                            <Circle
+                                cx="45"
+                                cy="45"
+                                r={this.state.recording ? '40' : '35'}
+                                stroke={
+                                    this.state.recording ? '#c71f16' : 'white'
+                                }
+                                strokeWidth="6"
+                                fill={
+                                    this.state.recording
+                                        ? '#c71f16'
+                                        : 'transparent'
+                                }
+                                fillOpacity="1"
+                                strokeOpacity={this.state.recording ? '0' : '1'}
+                            />
+                        </Svg>
+                    </TouchableWithoutFeedback>
+                </RNCamera>
+            </View>
         )
     }
 
