@@ -1,10 +1,13 @@
 import * as React from 'react'
-import { StyleSheet, View, Text, TouchableWithoutFeedback } from 'react-native'
+import { StyleSheet, View, Text } from 'react-native'
 import { RNCamera } from 'react-native-camera'
-import MaterialIcon from 'react-native-vector-icons/MaterialIcons'
-import FeatherIcon from 'react-native-vector-icons/Feather'
 
-import Svg, { Circle } from 'react-native-svg'
+import DeleteButtonComponent from './Capture/Components/Buttons/DeleteButton'
+import FlashButtonCompoonent from './Capture/Components/Buttons/FlashButton'
+import ProceedButtonCompoonent from './Capture/Components/Buttons/ProceedButton'
+import MediaLibraryButtonComponent from './Capture/Components/Buttons/MediaLibraryButton'
+import CameraRotateButtonComponent from './Capture/Components/Buttons/CameraRotateButton'
+import CameraCaptureButtonCompoonent from './Capture/Components/Buttons/CameraCaptureButton'
 
 export interface Props {}
 export interface State {}
@@ -27,25 +30,21 @@ const styles = StyleSheet.create({
     },
     preview: {
         flex: 1,
-        justifyContent: 'flex-end',
-        alignItems: 'center',
-    },
-    capture: {
-        flex: 0,
-        height: 120,
-        width: 100,
-        marginBottom: 30,
-        opacity: 1,
+        flexDirection: 'column',
     },
 })
 
-class Camera extends React.Component<Props, { recording: boolean }> {
+class Camera extends React.Component<
+    Props,
+    { recording: boolean; flashActive: boolean }
+> {
     public camera: any
 
     constructor(props) {
         super(props)
         this.state = {
             recording: false,
+            flashActive: false,
         }
 
         this.capture = this.capture.bind(this)
@@ -60,7 +59,11 @@ class Camera extends React.Component<Props, { recording: boolean }> {
                     }}
                     style={styles.preview}
                     type={RNCamera.Constants.Type.back}
-                    flashMode={RNCamera.Constants.FlashMode.off}
+                    flashMode={
+                        this.state.flashActive
+                            ? RNCamera.Constants.FlashMode.torch
+                            : RNCamera.Constants.FlashMode.off
+                    }
                     permissionDialogTitle={'Permission to use camera'}
                     permissionDialogMessage={
                         'We need your permission to use your camera phone'
@@ -69,132 +72,54 @@ class Camera extends React.Component<Props, { recording: boolean }> {
                 >
                     <View
                         style={{
-                            paddingVertical: 6,
-                            paddingHorizontal: 6,
-                            opacity: 0.8,
-                            margin: 10,
-                            borderWidth: 0,
-                            borderColor: '#fff',
-                            borderRadius: 35,
+                            flex: 1,
+                            justifyContent: 'flex-end',
+                            alignItems: 'flex-start',
+                            flexDirection: 'row',
                         }}
                     >
-                        <FeatherIcon name="delete" size={35} color="#fff" />
-                    </View>
-                    <View
-                        style={{
-                            paddingVertical: 6,
-                            paddingHorizontal: 6,
-                            opacity: 0.8,
-                            margin: 10,
-                            borderWidth: 0,
-                            borderColor: '#fff',
-                            borderRadius: 35,
-                        }}
-                    >
-                        <FeatherIcon
-                            name="arrow-right"
-                            size={35}
-                            color="#fff"
+                        {/* <DeleteButtonComponent />
+                        <ProceedButtonCompoonent />
+                        <MediaLibraryButtonComponent />
+                        <CameraRotateButtonComponent /> */}
+                        <FlashButtonCompoonent
+                            active={this.state.flashActive}
+                            activationHandler={this.flashToggle}
                         />
                     </View>
                     <View
                         style={{
-                            paddingVertical: 6,
-                            paddingHorizontal: 6,
-                            opacity: 0.8,
-                            margin: 10,
-                            borderWidth: 0,
-                            borderColor: '#fff',
-                            borderRadius: 35,
+                            flex: 1,
+                            justifyContent: 'space-between',
+                            alignItems: 'flex-end',
+                            alignContent: 'space-between',
+                            flexDirection: 'row',
                         }}
                     >
-                        <FeatherIcon name="image" size={35} color="#fff" />
-                    </View>
-                    <View
-                        style={{
-                            paddingVertical: 6,
-                            paddingHorizontal: 6,
-                            opacity: 0.8,
-                            margin: 10,
-                            borderWidth: 0,
-                            borderColor: '#fff',
-                            borderRadius: 35,
-                        }}
-                    >
-                        <FeatherIcon
-                            name="refresh-cw"
-                            size={30}
-                            color="#fff"
-                            style={{ marginLeft: 0 }}
+                        <CameraRotateButtonComponent />
+                        <CameraCaptureButtonCompoonent
+                            captureHandler={this.capture}
+                            recording={this.state.recording}
                         />
+                        <MediaLibraryButtonComponent />
                     </View>
-                    <View
-                        style={{
-                            paddingVertical: 6,
-                            paddingHorizontal: 6,
-                            opacity: 0.8,
-                            margin: 10,
-                            borderWidth: 0,
-                            borderColor: '#fff',
-                            borderRadius: 35,
-                        }}
-                    >
-                        <MaterialIcon
-                            name="flash-on"
-                            size={35}
-                            color="#fff"
-                            style={{ marginLeft: 0 }}
-                        />
-                    </View>
-                    <View
-                        style={{
-                            paddingVertical: 6,
-                            paddingHorizontal: 5,
-                            opacity: 0.5,
-                            margin: 10,
-                            borderWidth: 0,
-                            borderColor: '#fff',
-                            borderRadius: 35,
-                        }}
-                    >
-                        <MaterialIcon
-                            name="flash-off"
-                            size={35}
-                            color="#fff"
-                            style={{ marginLeft: 3 }}
-                        />
-                    </View>
-                    <TouchableWithoutFeedback onPress={this.capture}>
-                        <Svg style={styles.capture} width="85" height="100">
-                            <Circle
-                                cx="45"
-                                cy="45"
-                                r={this.state.recording ? '40' : '35'}
-                                stroke={
-                                    this.state.recording ? '#c71f16' : 'white'
-                                }
-                                strokeWidth="6"
-                                fill={
-                                    this.state.recording
-                                        ? '#c71f16'
-                                        : 'transparent'
-                                }
-                                fillOpacity="1"
-                                strokeOpacity={this.state.recording ? '0' : '1'}
-                            />
-                        </Svg>
-                    </TouchableWithoutFeedback>
                 </RNCamera>
             </View>
         )
     }
 
-    capture = async function() {
+    capture = async () => {
         if (this.camera) {
             this.setState({ recording: !this.state.recording })
             // const options = { quality: 0.5, base64: true }
             // const data = await this.camera.takePictureAsync(options)
             // console.log(data.uri)
+        }
+    }
+
+    flashToggle = () => {
+        if (this.camera) {
+            this.setState({ flashActive: !this.state.flashActive })
         }
     }
 }
