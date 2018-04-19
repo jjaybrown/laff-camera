@@ -3,13 +3,13 @@ import { View } from 'react-native'
 import FeatherIcon from 'react-native-vector-icons/Feather'
 import React from 'react'
 
-const MediaLibraryButtonComponent: SFC<{}> = () => {
+const ProfileButtonComponent: SFC<{}> = () => {
     return (
         <View
             style={{
                 paddingVertical: 6,
                 paddingHorizontal: 6,
-                opacity: 0.9,
+                opacity: 0.8,
                 margin: 10,
                 shadowRadius: 1,
                 shadowOffset: { width: 3, height: 3 },
@@ -17,9 +17,14 @@ const MediaLibraryButtonComponent: SFC<{}> = () => {
                 shadowColor: '#000',
             }}
         >
-            <FeatherIcon name="copy" size={45} color="#fff" />
+            <FeatherIcon
+                name="user"
+                size={40}
+                color="#fff"
+                style={{ marginLeft: 0 }}
+            />
         </View>
     )
 }
 
-export default MediaLibraryButtonComponent
+export default ProfileButtonComponent

@@ -11,14 +11,15 @@
         "lint": "tslint src/**/*.ts",
         "watch": "yarn build -w",
         "ios": "yarn build && concurrently -r \"yarn  watch\" \"react-native run-ios\"",
-        "android": "yarn  build && concurrently -r \"yarn  watch\" \"react-native run-android\""
+        "android": "yarn  build && concurrently -r \"yarn  watch\" \"react-native run-android --debug\""
     },
     "dependencies": {
         "react": "16.3.1",
         "react-native": "^0.55.2",
         "react-native-camera": "^1.0.3",
         "react-native-svg": "^6.3.1",
-        "react-native-vector-icons": "^4.6.0"
+        "react-native-vector-icons": "^4.6.0",
+        "svg-arc-corners": "^1.0.4"
     },
     "devDependencies": {
         "@types/jest": "^22.2.3",

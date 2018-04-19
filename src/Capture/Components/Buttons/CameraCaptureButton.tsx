@@ -4,33 +4,60 @@ import {
     TouchableWithoutFeedback,
     GestureResponderEvent,
 } from 'react-native'
-import Svg, { Circle } from 'react-native-svg'
+import Svg, { Circle, Path } from 'react-native-svg'
 import React from 'react'
+import arc from 'svg-arc-corners'
 
-const styles = StyleSheet.create({
-    capture: {
-        flex: 0,
-        marginBottom: 30,
-        opacity: 1,
-    },
-})
+const styles = (withShadow: boolean) => {
+    return StyleSheet.create({
+        capture: {
+            flex: 0,
+            opacity: 1,
+            shadowRadius: 1,
+            shadowOffset: { width: 3, height: 3 },
+            shadowOpacity: withShadow ? 0.3 : 0,
+            shadowColor: '#000',
+            marginLeft: 5,
+        },
+    })
+}
 
 const CameraCaptureButtonCompoonent: SFC<{
     recording: boolean
+    percentage: number
+    handlerDisabled: boolean
     captureHandler: (event: GestureResponderEvent) => void
 }> = props => {
     return (
-        <TouchableWithoutFeedback onPress={props.captureHandler}>
-            <Svg style={styles.capture} width="85" height="100">
+        <TouchableWithoutFeedback
+            onPressIn={props.captureHandler}
+            onPressOut={props.captureHandler}
+            pressRetentionOffset={{
+                top: 100,
+                left: 100,
+                bottom: 100,
+                right: 100,
+            }}
+            disabled={props.handlerDisabled}
+        >
+            <Svg
+                style={styles(!props.recording).capture}
+                width="150"
+                height="150"
+            >
                 <Circle
-                    cx="45"
-                    cy="45"
-                    r={props.recording ? '40' : '35'}
-                    stroke={props.recording ? '#c71f16' : 'white'}
-                    strokeWidth="6"
-                    fill={props.recording ? '#c71f16' : 'transparent'}
-                    fillOpacity="1"
-                    strokeOpacity={props.recording ? '0' : '1'}
+                    cx="75"
+                    cy="75"
+                    r={props.recording ? '50' : '35'}
+                    stroke="white"
+                    strokeWidth="5"
+                    strokeOpacity="1"
+                    fill="transparent"
+                />
+                <Path
+                    d={arc([75, 75], 70, 0, props.percentage || 0, 10, 20)}
+                    fill="red"
+                    fillOpacity={props.recording ? 0.9 : 0}
                 />
             </Svg>
         </TouchableWithoutFeedback>

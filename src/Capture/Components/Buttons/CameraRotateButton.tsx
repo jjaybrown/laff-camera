@@ -9,11 +9,12 @@ const CameraRotateButtonComponent: SFC<{}> = () => {
             style={{
                 paddingVertical: 6,
                 paddingHorizontal: 6,
-                opacity: 0.8,
+                opacity: 0.9,
                 margin: 10,
-                borderWidth: 0,
-                borderColor: '#fff',
-                borderRadius: 35,
+                shadowRadius: 1,
+                shadowOffset: { width: 3, height: 3 },
+                shadowOpacity: 0.3,
+                shadowColor: '#000',
             }}
         >
             <FeatherIcon
