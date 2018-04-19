@@ -8,20 +8,6 @@ import Svg, { Circle, Path } from 'react-native-svg'
 import React from 'react'
 import arc from 'svg-arc-corners'
 
-const styles = (withShadow: boolean) => {
-    return StyleSheet.create({
-        capture: {
-            flex: 0,
-            opacity: 1,
-            shadowRadius: 1,
-            shadowOffset: { width: 3, height: 3 },
-            shadowOpacity: withShadow ? 0.3 : 0,
-            shadowColor: '#000',
-            marginLeft: 5,
-        },
-    })
-}
-
 const CameraCaptureButtonCompoonent: SFC<{
     recording: boolean
     percentage: number
@@ -62,6 +48,21 @@ const CameraCaptureButtonCompoonent: SFC<{
             </Svg>
         </TouchableWithoutFeedback>
     )
+}
+
+const styles = (withShadow: boolean) => {
+    return StyleSheet.create({
+        capture: {
+            flex: 0,
+            opacity: 1,
+            shadowRadius: 1,
+            shadowOffset: { width: 3, height: 3 },
+            shadowOpacity: withShadow ? 0.3 : 0,
+            shadowColor: '#000',
+            marginLeft: 5,
+            marginBottom: 15,
+        },
+    })
 }
 
 export default CameraCaptureButtonCompoonent

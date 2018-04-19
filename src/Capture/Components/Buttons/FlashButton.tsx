@@ -9,15 +9,19 @@ import React from 'react'
 
 const FlashButtonCompoonent: SFC<{
     active: boolean
+    hidden: boolean
     activationHandler: (event: GestureResponderEvent) => void
 }> = props => {
     return (
-        <TouchableWithoutFeedback onPress={props.activationHandler}>
+        <TouchableWithoutFeedback
+            onPress={props.activationHandler}
+            disabled={props.hidden}
+        >
             <View
                 style={{
                     paddingVertical: 6,
                     paddingHorizontal: 6,
-                    opacity: props.active ? 0.8 : 0.5,
+                    opacity: props.hidden ? 0 : props.active ? 0.8 : 0.5,
                     margin: 10,
                     shadowRadius: 1,
                     shadowOffset: { width: 3, height: 3 },
