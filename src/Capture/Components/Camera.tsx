@@ -25,10 +25,7 @@ enum CameraMode {
     BACK,
 }
 
-export default class Camera extends React.PureComponent<
-    CameraProps,
-    CameraState
-> {
+export default class Camera extends React.Component<CameraProps, CameraState> {
     private camera: RNCamera
     private recordingTimer: any
     private recordingTimeElapsed: number
@@ -36,22 +33,20 @@ export default class Camera extends React.PureComponent<
 
     constructor(props) {
         super(props)
+
+        this.startCapture = this.startCapture.bind(this)
         this.state = {
             recording: false,
             percentage: 0,
             flashActive: false,
-            captureDisabled: false,
+            captureDisabled: true,
             cameraMode: CameraMode.BACK,
             ready: false,
         }
-
-        this.startCapture = this.startCapture.bind(this)
-        this.cameraReadyOpacity = new Animated.Value(
-            this.state.recording ? 1 : 0.2,
-        )
     }
 
     render() {
+        this.cameraReadyOpacity = new Animated.Value(this.state.ready ? 1 : 0.2)
         return (
             <Animated.View style={styles.container}>
                 <RNCamera
@@ -73,10 +68,14 @@ export default class Camera extends React.PureComponent<
                     }
                     onCameraReady={() => {
                         Animated.timing(this.cameraReadyOpacity, {
-                            toValue: !this.state.ready ? 1 : 0.2,
+                            toValue: this.state.ready ? 1 : 0.2,
                             duration: 500,
                         }).start(() => {
-                            this.setState({ ready: !this.state.ready })
+                            this.setState({
+                                ...this.state,
+                                ready: true,
+                                captureDisabled: false,
+                            })
                         })
                     }}
                 >
@@ -95,7 +94,10 @@ export default class Camera extends React.PureComponent<
                         <FlashButtonCompoonent
                             active={this.state.flashActive}
                             activationHandler={this.flashToggle}
-                            hidden={this.state.cameraMode !== CameraMode.BACK}
+                            hidden={
+                                this.state.cameraMode !== CameraMode.BACK ||
+                                this.state.recording
+                            }
                         />
                     </Animated.View>
                     <Animated.View
@@ -113,6 +115,7 @@ export default class Camera extends React.PureComponent<
                     >
                         <CameraRotateButtonComponent
                             rotationHandler={this.changeCameraMode}
+                            disabled={!this.state.ready || this.state.recording}
                         />
                         <CameraCaptureButtonCompoonent
                             startCaptureHandler={this.startCapture}
@@ -124,7 +127,9 @@ export default class Camera extends React.PureComponent<
                             percentage={this.state.percentage * 360}
                             handlerDisabled={this.state.captureDisabled}
                         />
-                        <MediaLibraryButtonComponent />
+                        <MediaLibraryButtonComponent
+                            disabled={!this.state.ready || this.state.recording}
+                        />
                     </Animated.View>
                 </RNCamera>
             </Animated.View>
@@ -134,7 +139,10 @@ export default class Camera extends React.PureComponent<
     startCapture = async () => {
         if (this.camera) {
             this.__resetCaptureAnimation()
-            this.setState({ recording: true })
+            this.setState({
+                ...this.state,
+                recording: true,
+            })
 
             this.recordingTimer = setInterval(() => {
                 this.recordingTimeElapsed += 1
@@ -142,6 +150,7 @@ export default class Camera extends React.PureComponent<
                 const percentage = this.recordingTimeElapsed / 480
 
                 this.setState({
+                    ...this.state,
                     percentage: percentage,
                 })
             }, 50)
@@ -163,7 +172,14 @@ export default class Camera extends React.PureComponent<
 
     stopCapture = () => {
         if (this.camera) {
-            this.setState({ recording: false })
+            this.setState({
+                recording: false,
+                percentage: 0,
+                flashActive: false,
+                captureDisabled: false,
+                cameraMode: CameraMode.BACK,
+                ready: true,
+            })
             this.__resetCaptureAnimation()
             this.camera.stopRecording()
         }
@@ -172,6 +188,7 @@ export default class Camera extends React.PureComponent<
     flashToggle = () => {
         if (this.camera) {
             this.setState({
+                ...this.state,
                 flashActive: !this.state.flashActive,
             })
         }
@@ -179,6 +196,7 @@ export default class Camera extends React.PureComponent<
 
     changeCameraMode = () => {
         this.setState({
+            ...this.state,
             flashActive: false,
             cameraMode:
                 this.state.cameraMode === CameraMode.BACK
@@ -190,7 +208,10 @@ export default class Camera extends React.PureComponent<
     private __resetCaptureAnimation = () => {
         this.recordingTimeElapsed = 0
         clearInterval(this.recordingTimer)
-        this.setState({ percentage: 0 })
+        this.setState({
+            ...this.state,
+            percentage: 0,
+        })
     }
 }
 

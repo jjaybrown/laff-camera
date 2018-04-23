@@ -10,6 +10,7 @@ import React from 'react'
 class CameraRotateButtonComponent extends React.PureComponent<
     {
         rotationHandler: (event: GestureResponderEvent) => void
+        disabled?: boolean | null
     },
     { animation: Animated.Value }
 > {
@@ -34,12 +35,15 @@ class CameraRotateButtonComponent extends React.PureComponent<
         )
 
         return (
-            <TouchableWithoutFeedback onPress={this.rotate.bind(this)}>
+            <TouchableWithoutFeedback
+                onPress={this.rotate.bind(this)}
+                disabled={this.props.disabled || false}
+            >
                 <View
                     style={{
                         paddingVertical: 6,
                         paddingHorizontal: 6,
-                        opacity: 0.9,
+                        opacity: this.props.disabled ? 0.2 : 0.9,
                         margin: 10,
                         shadowRadius: 3,
                         shadowOffset: { width: 0, height: 3 },
