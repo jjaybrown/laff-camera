@@ -41,9 +41,9 @@ class CameraRotateButtonComponent extends React.PureComponent<
                         paddingHorizontal: 6,
                         opacity: 0.9,
                         margin: 10,
-                        shadowRadius: 1,
-                        shadowOffset: { width: 3, height: 3 },
-                        shadowOpacity: 0.3,
+                        shadowRadius: 3,
+                        shadowOffset: { width: 0, height: 3 },
+                        shadowOpacity: 0.1,
                         shadowColor: '#000',
                     }}
                 >

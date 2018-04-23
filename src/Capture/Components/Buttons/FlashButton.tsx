@@ -23,9 +23,9 @@ const FlashButtonCompoonent: SFC<{
                     paddingHorizontal: 6,
                     opacity: props.hidden ? 0 : props.active ? 0.8 : 0.5,
                     margin: 10,
-                    shadowRadius: 1,
-                    shadowOffset: { width: 3, height: 3 },
-                    shadowOpacity: 0.6,
+                    shadowRadius: 3,
+                    shadowOffset: { width: 0, height: 3 },
+                    shadowOpacity: 0.5,
                     shadowColor: '#000',
                 }}
             >

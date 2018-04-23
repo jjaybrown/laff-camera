@@ -12,12 +12,13 @@ const CameraCaptureButtonCompoonent: SFC<{
     recording: boolean
     percentage: number
     handlerDisabled: boolean
-    captureHandler: (event: GestureResponderEvent) => void
+    startCaptureHandler: (event: GestureResponderEvent) => void
+    stopCaptureHandler: (event: GestureResponderEvent) => void
 }> = props => {
     return (
         <TouchableWithoutFeedback
-            onPressIn={props.captureHandler}
-            onPressOut={props.captureHandler}
+            onPressIn={props.startCaptureHandler}
+            onPressOut={props.stopCaptureHandler}
             pressRetentionOffset={{
                 top: 100,
                 left: 100,
@@ -55,9 +56,9 @@ const styles = (withShadow: boolean) => {
         capture: {
             flex: 0,
             opacity: 1,
-            shadowRadius: 1,
-            shadowOffset: { width: 3, height: 3 },
-            shadowOpacity: withShadow ? 0.3 : 0,
+            shadowRadius: 3,
+            shadowOffset: { width: 0, height: 3 },
+            shadowOpacity: withShadow ? 0.1 : 0,
             shadowColor: '#000',
             marginLeft: 5,
             marginBottom: 15,

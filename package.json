@@ -19,12 +19,14 @@
         "react-native-camera": "^1.0.3",
         "react-native-svg": "^6.3.1",
         "react-native-vector-icons": "^4.6.0",
+        "react-native-video": "^2.0.0",
         "svg-arc-corners": "^1.0.4"
     },
     "devDependencies": {
         "@types/jest": "^22.2.3",
         "@types/react-native": "^0.55.2",
         "@types/react-native-vector-icons": "^4.6.0",
+        "@types/react-native-video": "^2.0.3",
         "babel-jest": "22.4.3",
         "babel-preset-react-native": "4.0.0",
         "concurrently": "^3.5.1",

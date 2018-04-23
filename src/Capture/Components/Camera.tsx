@@ -1,6 +1,6 @@
 import * as React from 'react'
-import { StyleSheet, View } from 'react-native'
-import { RNCamera, RNCameraProps } from 'react-native-camera'
+import { Animated, StyleSheet } from 'react-native'
+import { RNCamera, RNCameraProps, RecordResponse } from 'react-native-camera'
 
 import FlashButtonCompoonent from '../Components/Buttons/FlashButton'
 import MediaLibraryButtonComponent from '../Components/Buttons/MediaLibraryButton'
@@ -8,7 +8,7 @@ import CameraRotateButtonComponent from '../Components/Buttons/CameraRotateButto
 import CameraCaptureButtonCompoonent from '../Components/Buttons/CameraCaptureButton'
 
 interface CameraProps extends RNCameraProps {
-    captureFinishedHandler?: Function
+    captureFinishedHandler?: (uri: string) => void
 }
 
 interface CameraState {
@@ -17,6 +17,7 @@ interface CameraState {
     flashActive: boolean
     captureDisabled: boolean
     cameraMode: CameraMode
+    ready: boolean
 }
 
 enum CameraMode {
@@ -28,9 +29,10 @@ export default class Camera extends React.PureComponent<
     CameraProps,
     CameraState
 > {
-    private camera: any
+    private camera: RNCamera
     private recordingTimer: any
     private recordingTimeElapsed: number
+    private cameraReadyOpacity: Animated.Value
 
     constructor(props) {
         super(props)
@@ -40,14 +42,18 @@ export default class Camera extends React.PureComponent<
             flashActive: false,
             captureDisabled: false,
             cameraMode: CameraMode.BACK,
+            ready: false,
         }
 
-        this.capture = this.capture.bind(this)
+        this.startCapture = this.startCapture.bind(this)
+        this.cameraReadyOpacity = new Animated.Value(
+            this.state.recording ? 1 : 0.2,
+        )
     }
 
     render() {
         return (
-            <View style={styles.container}>
+            <Animated.View style={styles.container}>
                 <RNCamera
                     {...this.props}
                     ref={ref => {
@@ -65,20 +71,52 @@ export default class Camera extends React.PureComponent<
                             ? RNCamera.Constants.FlashMode.torch
                             : RNCamera.Constants.FlashMode.off
                     }
+                    onCameraReady={() => {
+                        Animated.timing(this.cameraReadyOpacity, {
+                            toValue: !this.state.ready ? 1 : 0.2,
+                            duration: 500,
+                        }).start(() => {
+                            this.setState({ ready: !this.state.ready })
+                        })
+                    }}
                 >
-                    <View style={styles.cameraControlsTop}>
+                    <Animated.View
+                        style={{
+                            flex: 1,
+                            justifyContent: 'flex-end',
+                            alignItems: 'flex-start',
+                            flexDirection: 'row',
+                            opacity: this.cameraReadyOpacity.interpolate({
+                                inputRange: [0.2, 1],
+                                outputRange: [0.2, 1],
+                            }),
+                        }}
+                    >
                         <FlashButtonCompoonent
                             active={this.state.flashActive}
                             activationHandler={this.flashToggle}
                             hidden={this.state.cameraMode !== CameraMode.BACK}
                         />
-                    </View>
-                    <View style={styles.cameraControlsBottom}>
+                    </Animated.View>
+                    <Animated.View
+                        style={{
+                            flex: 1,
+                            justifyContent: 'space-between',
+                            alignItems: 'flex-end',
+                            alignContent: 'space-between',
+                            flexDirection: 'row',
+                            opacity: this.cameraReadyOpacity.interpolate({
+                                inputRange: [0.2, 1],
+                                outputRange: [0.2, 1],
+                            }),
+                        }}
+                    >
                         <CameraRotateButtonComponent
                             rotationHandler={this.changeCameraMode}
                         />
                         <CameraCaptureButtonCompoonent
-                            captureHandler={this.capture}
+                            startCaptureHandler={this.startCapture}
+                            stopCaptureHandler={this.stopCapture}
                             recording={
                                 this.state.recording &&
                                 !this.state.captureDisabled
@@ -87,40 +125,47 @@ export default class Camera extends React.PureComponent<
                             handlerDisabled={this.state.captureDisabled}
                         />
                         <MediaLibraryButtonComponent />
-                    </View>
+                    </Animated.View>
                 </RNCamera>
-            </View>
+            </Animated.View>
         )
     }
 
-    capture = async () => {
+    startCapture = async () => {
         if (this.camera) {
-            this.setState({
-                recording: !this.state.recording,
-            })
+            this.__resetCaptureAnimation()
+            this.setState({ recording: true })
 
-            if (!this.state.recording) {
-                this.recordingTimeElapsed = 0
-                clearInterval(this.recordingTimer)
-                this.recordingTimer = setInterval(() => {
-                    this.recordingTimeElapsed += 1
+            this.recordingTimer = setInterval(() => {
+                this.recordingTimeElapsed += 1
 
-                    const percentage = this.recordingTimeElapsed / 480
-                    if (percentage >= 1) {
-                        this.__resetCaptureAnimation()
-                    }
+                const percentage = this.recordingTimeElapsed / 480
 
-                    this.setState({
-                        percentage: percentage,
-                    })
-                }, 50)
-            } else {
-                this.__resetCaptureAnimation()
-            }
+                this.setState({
+                    percentage: percentage,
+                })
+            }, 50)
 
-            // const options = { quality: 0.5, base64: true }
-            // const data = await this.camera.takePictureAsync(options)
-            // console.log(data.uri)
+            this.camera
+                .recordAsync({
+                    quality: RNCamera.Constants.VideoQuality['720p'],
+                    maxDuration: 30,
+                })
+                .then((response: RecordResponse) => {
+                    this.stopCapture()
+                    this.props.captureFinishedHandler(response.uri)
+                })
+                .catch((error: Error) => {
+                    console.log(error.message)
+                })
+        }
+    }
+
+    stopCapture = () => {
+        if (this.camera) {
+            this.setState({ recording: false })
+            this.__resetCaptureAnimation()
+            this.camera.stopRecording()
         }
     }
 
@@ -143,14 +188,9 @@ export default class Camera extends React.PureComponent<
     }
 
     private __resetCaptureAnimation = () => {
-        clearInterval(this.recordingTimer)
-
         this.recordingTimeElapsed = 0
-        this.setState({ percentage: 0, captureDisabled: true })
-
-        setTimeout(() => {
-            this.setState({ captureDisabled: false })
-        }, 2000)
+        clearInterval(this.recordingTimer)
+        this.setState({ percentage: 0 })
     }
 }
 
@@ -159,19 +199,6 @@ const styles = StyleSheet.create({
         flex: 1,
         flexDirection: 'column',
         backgroundColor: 'transparent',
-    },
-    cameraControlsTop: {
-        flex: 1,
-        justifyContent: 'flex-end',
-        alignItems: 'flex-start',
-        flexDirection: 'row',
-    },
-    cameraControlsBottom: {
-        flex: 1,
-        justifyContent: 'space-between',
-        alignItems: 'flex-end',
-        alignContent: 'space-between',
-        flexDirection: 'row',
     },
     preview: {
         flex: 1,
