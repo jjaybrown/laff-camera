@@ -33,3 +33,4 @@ To run project on a device you should open the project files within iOS or andro
 
 *   Use [immerjs](https://github.com/mweststrate/immer) to produce new states for Camera Component
 *   Introduce React 16 Context actions and reducers (with immerjs) to modify camera operations
+*   TESTS!!!
